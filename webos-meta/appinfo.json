@@ -1,0 +1,22 @@
+{
+   "id":"com.webos.app.camera",
+   "title":"Camera App",
+   "version":"1.0.0",
+   "vendor":"LG Electronics",
+   "type":"web",
+   "main":"index.html",
+   "icon":"icon.png",
+   "iconColor":"#E42E28",
+   "disallowScrollingInMainFrame":false,
+   "trustLevel":"trusted",
+   "requiredPermissions":[
+      "camera.query",
+      "camera.operation",
+      "media.operation",
+      "mediacontroller.operation",
+      "mediaindexer.operation",
+      "mediapipeline.resourcemanagement",
+      "mediapipeline.operation"
+   ],
+   "uiRevision":2
+}
