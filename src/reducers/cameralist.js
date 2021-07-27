@@ -1,4 +1,3 @@
-
 const cameralist = (state = [], action) => {
 	switch (action.type) {
 		case 'CAMERALIST_LOADED':

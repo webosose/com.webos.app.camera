@@ -1,44 +1,37 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import CameraCont from '../../components/CameraCont';
-import css from './CamerasGrid.module.less';
 import classNames from 'classnames/bind';
-import Heading from '@enact/sandstone/Heading';
+import CameraPreview from '../../components/CameraPreview';
+import css from './CamerasGrid.module.less';
 
 const cx = classNames.bind(css);
-class CamerasGrid extends React.Component{
-    constructor(props){
-        super(props);
-    }
-   render = () => {
-       const {cameralist} = this.props;
-       console.log("CamerasGrid render: "+JSON.stringify(cameralist))
-        return(
-            <div>
-                <Heading
-                    size="large"
-                    spacing="small"
-                    >
-                    Two camera Demo
-                    </Heading>
-                    <div className={cx("grid")}>
-                    {cameralist.map(value=>{
-                        return (<div className={cx("gridItem1")}>
-                            <CameraCont cameraID={value.id}/>
-                        </div>)
-                    })}
-                </div>
-            </div>)
 
-    }
+class CamerasGrid extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+	render = () => {
+		const {cameraStatus} = this.props;
+		// console.log('CamerasGrid render: ' + JSON.stringify(cameraStatus));
+		return (
+			<div>
+				<div className={cx('grid')}>
+					{cameraStatus.map((value) => {
+						return (
+							<div className={cx('gridItem1')} key={value.id}>
+								<CameraPreview data={{...value}} />
+							</div>
+						);
+					})}
+				</div>
+			</div>
+		);
+	};
 }
 
-
-const mapStateToProps = ({cameralist}) => {
-    console.log(cameralist);
+const mapStateToProps = ({cameraStatus}) => {
 	return {
-        cameralist:cameralist
+		cameraStatus: cameraStatus
 	};
 };
 export default connect(mapStateToProps)(CamerasGrid);
-

@@ -1,14 +1,14 @@
 import React from 'react';
+import classNames from 'classnames/bind';
 import ThemeDecorator from '@enact/sandstone/ThemeDecorator';
 import MainPanel from '../views/MainPanel';
-
 import {_get} from '../utils/common';
 import css from './App.module.less';
-import classNames from 'classnames/bind';
+
 const cx = classNames.bind(css);
 
 class App extends React.Component {
-	constructor (props) {
+	constructor(props) {
 		super(props);
 	}
 
@@ -25,15 +25,14 @@ class App extends React.Component {
 		});
 	};
 
-	render () {
+	render() {
 		return (
 			<React.Fragment>
-				<div className={cx(css)}>
+				<div className={cx('app')}>
 					<MainPanel />
 				</div>
 			</React.Fragment>
 		);
 	}
 }
-export default ThemeDecorator(App)
-
+export default ThemeDecorator(App);
