@@ -10,6 +10,7 @@ import snapshoIcon from '../../public/Icons/snapshot.svg';
 import changeScreen from '../actions/changeScreen';
 import startRecord from '../actions/startRecord';
 import stopRecord from '../actions/stopRecord';
+import getSnapshot from '../actions/getSnapshot';
 import css from './CameraPreview.module.less';
 
 const cx = classNames.bind(css);
@@ -46,12 +47,16 @@ class CameraPreview extends React.Component {
 			this.props.startRecord(this.media_id, this.props.data.id);
 		}
 	};
+	takeSnapShot = () => {
+		this.props.getSnapshot(this.media_id);
+	};
 	showFullScreenPreview = () => {
 		this.props.changeScreen({
 			name: 'fullscreen',
 			data: {...this.props.data}
 		});
 	};
+
 	render = () => {
 		//debugger;
 		const {showOption, recording} = this.state;
@@ -68,7 +73,11 @@ class CameraPreview extends React.Component {
 							className={cx('icon')}
 							onClick={this.startRecording}
 						/>
-						<Image src={snapshoIcon} className={cx('icon')} />
+						<Image
+							src={snapshoIcon}
+							className={cx('icon')}
+							onClick={this.takeSnapShot}
+						/>
 						<Image
 							src={fullscreenIcon}
 							className={cx('icon')}
@@ -85,6 +94,7 @@ class CameraPreview extends React.Component {
 				)}
 				<video ref={this.videoRef}>
 					<source src='camera://com.webos.service.camera2/' type={type} />
+					{/* <source src='file:///media/multimedia/Record05082021-23260371.mp4'/> */}
 				</video>
 			</div>
 		);
@@ -111,6 +121,7 @@ class CameraPreview extends React.Component {
 const mapDispatchToProps = (dispatch) => ({
 	changeScreen: (data) => dispatch(changeScreen(data)),
 	startRecord: (mediaID, cameraID) => dispatch(startRecord(mediaID, cameraID)),
-	stopRecord: (mediaID, cameraID) => dispatch(stopRecord(mediaID, cameraID))
+	stopRecord: (mediaID, cameraID) => dispatch(stopRecord(mediaID, cameraID)),
+	getSnapshot: (mediaID) => dispatch(getSnapshot(mediaID))
 });
 export default connect(null, mapDispatchToProps)(CameraPreview);
