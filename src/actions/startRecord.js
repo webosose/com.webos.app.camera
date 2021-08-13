@@ -1,13 +1,34 @@
 import lunaAction from './lunaActions';
-const startRecord = (mediaId, cameraID) => (dispatch) => {
+import changeScreen from './changeScreen';
+const startRecord = (id, ui) => (dispatch, getState) => {
+	const camera = getState().cameraStatus.find((value) => value.id === id);
+	if (ui === 'footer') {
+		dispatch(
+			changeScreen({
+				data: {
+					disableCamList: true,
+					disablPreviewOption: true
+				}
+			})
+		);
+	} else {
+		dispatch(
+			changeScreen({
+				data: {
+					disableCamList: true,
+					disablFooterRecording: true
+				}
+			})
+		);
+	}
 	return new Promise((resolve) => {
 		lunaAction(
 			{
 				service: 'luna://com.webos.media',
 				method: 'startCameraRecord',
 				parameters: {
-					mediaId,
-					location: '/media/multimedia/',
+					mediaId: camera.media_id,
+					location: '/media/multimedia/video-',
 					format: 'MP4',
 					audio: false,
 					audioSrc: 'pcm_input'
@@ -19,7 +40,7 @@ const startRecord = (mediaId, cameraID) => (dispatch) => {
 				if (res.returnValue) {
 					dispatch({
 						type: 'START_RECORDING',
-						payload: cameraID
+						payload: id
 					});
 				}
 			}

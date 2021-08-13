@@ -1,5 +1,4 @@
 const cameraStatus = (state = [], action) => {
-	console.log('action: ', action.payload);
 	switch (action.type) {
 		case 'ADD_CAMERA_STATUS':
 			return [...state, action.payload];
@@ -14,6 +13,13 @@ const cameraStatus = (state = [], action) => {
 			return state.map((v) => {
 				if (v.id === action.payload) {
 					v.recording = false;
+				}
+				return v;
+			});
+		case 'UPDATE_MEDIA_ID':
+			return state.map((v) => {
+				if (v.id === action.payload.id) {
+					v.media_id = action.payload.media_id;
 				}
 				return v;
 			});

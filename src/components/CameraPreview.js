@@ -11,6 +11,7 @@ import changeScreen from '../actions/changeScreen';
 import startRecord from '../actions/startRecord';
 import stopRecord from '../actions/stopRecord';
 import getSnapshot from '../actions/getSnapshot';
+import {updateMediaID} from '../actions/updateCameraStatus';
 import css from './CameraPreview.module.less';
 
 const cx = classNames.bind(css);
@@ -27,24 +28,26 @@ class CameraPreview extends React.Component {
 			}
 		};
 		this.state = {
-			showOption: false,
-			recording: false
+			showOption: false
 		};
 	}
 	openOptions = () => {
-		this.setState((state) => {
-			return {
-				showOption: !state.showOption
-			};
-		});
+		const {screen} = this.props;
+		const disable = screen.data.disablPreviewOption;
+		if (!disable) {
+			this.setState((state) => {
+				return {
+					showOption: !state.showOption
+				};
+			});
+		}
 	};
 	startRecording = () => {
-		if (this.state.recording) {
-			this.setState({recording: false});
-			this.props.stopRecord(this.media_id, this.props.data.id);
+		const {recording} = this.props.data;
+		if (recording) {
+			this.props.stopRecord(this.props.data.id);
 		} else {
-			this.setState({recording: true});
-			this.props.startRecord(this.media_id, this.props.data.id);
+			this.props.startRecord(this.props.data.id);
 		}
 	};
 	takeSnapShot = () => {
@@ -59,10 +62,12 @@ class CameraPreview extends React.Component {
 
 	render = () => {
 		//debugger;
-		const {showOption, recording} = this.state;
+		const showOption =
+			this.state.showOption && !this.props.screen.data.disablPreviewOption;
+		const {recording} = this.props.data;
 		const cameraOptions = escape(JSON.stringify(this.option));
 		const type = 'service/webos-camera;cameraOption=' + cameraOptions;
-		console.log('cameraOptions:  ', this.option);
+		console.log('cameraOptions:  ', this.props.data);
 		// console.log('cameraOptions escape:  ', cameraOptions);
 		return (
 			<div className={cx('videocont')} onClick={this.openOptions}>
@@ -102,7 +107,12 @@ class CameraPreview extends React.Component {
 	getupdatecamerastate = (e) => {
 		const obj = JSON.parse(e.detail);
 		console.log('detail msg :: ' + obj.mediaId);
-		this.media_id = obj.mediaId;
+		if (this.props.data.media_id !== obj.mediaId) {
+			this.props.updateMediaID({
+				id: this.props.data.id,
+				media_id: obj.mediaId
+			});
+		}
 	};
 	componentDidMount = () => {
 		this.videoRef.current.load();
@@ -118,10 +128,16 @@ class CameraPreview extends React.Component {
 		);
 	};
 }
+const mapStateToProps = ({screen}) => {
+	return {
+		screen
+	};
+};
 const mapDispatchToProps = (dispatch) => ({
 	changeScreen: (data) => dispatch(changeScreen(data)),
 	startRecord: (mediaID, cameraID) => dispatch(startRecord(mediaID, cameraID)),
 	stopRecord: (mediaID, cameraID) => dispatch(stopRecord(mediaID, cameraID)),
-	getSnapshot: (mediaID) => dispatch(getSnapshot(mediaID))
+	getSnapshot: (mediaID) => dispatch(getSnapshot(mediaID)),
+	updateMediaID: (data) => dispatch(updateMediaID(data))
 });
-export default connect(null, mapDispatchToProps)(CameraPreview);
+export default connect(mapStateToProps, mapDispatchToProps)(CameraPreview);

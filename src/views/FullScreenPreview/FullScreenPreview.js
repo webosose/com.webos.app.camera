@@ -42,15 +42,15 @@ class FullScreenPreview extends React.Component {
 	};
 	takePhoto = () => {
 		console.log('takePhoto');
-		this.props.getSnapshot(this.media_id);
+		this.props.getSnapshot(this.props.data.id);
 	};
 	recordVideo = () => {
 		if (this.state.recording) {
 			this.setState({recording: false});
-			this.props.stopRecord(this.media_id, this.props.data.id);
+			this.props.stopRecord(this.props.data.id);
 		} else {
 			this.setState({recording: true});
-			this.props.startRecord(this.media_id, this.props.data.id);
+			this.props.startRecord(this.props.data.id);
 		}
 	};
 	render() {

@@ -14,13 +14,17 @@ const updateCameraStatus = (list) => (dispatch) => {
 					format: 'JPEG',
 					streamType: 'JPEG',
 					memType: 'shmem',
-					memSrc: res.memsrc
+					memSrc: res.memsrc,
+					handle: res.handle
 				})
 			);
 		});
 	});
 };
 const getCameraList = () => (dispatch) => {
+	dispatch({
+		type: 'CLEAR_CAMERA_STATUS'
+	});
 	return new Promise((resolve) => {
 		lunaAction(
 			{
