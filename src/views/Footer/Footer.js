@@ -25,7 +25,7 @@ class Footer extends React.Component {
 		super(props);
 		this.state = {
 			recording: false,
-			cameraPower : true
+			cameraPower: true
 		};
 	}
 	refresh = () => {
@@ -68,8 +68,11 @@ class Footer extends React.Component {
 		}
 	};
 	takeSnapShot = () => {
-		this.props.cameraStatus.forEach((camera) => {
-			this.props.getSnapshot(camera.id);
+		this.props.cameraStatus.forEach((camera, index) => {
+			this.props.getSnapshot(
+				camera.id,
+				index !== this.props.cameraStatus.length
+			);
 		});
 	};
 	render() {
@@ -77,8 +80,8 @@ class Footer extends React.Component {
 			this.props.selectedCameras.length === 0 ||
 			this.props.screen.data.disablFooterRecording ||
 			false;
-		const {recording,cameraPower} = this.state;
-		console.log("cameraPower:  "+cameraPower);
+		const {recording, cameraPower} = this.state;
+		console.log('cameraPower:  ' + cameraPower);
 		return (
 			<div>
 				<div className={cx('row')}>

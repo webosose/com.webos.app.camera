@@ -51,7 +51,7 @@ class CameraPreview extends React.Component {
 		}
 	};
 	takeSnapShot = () => {
-		this.props.getSnapshot(this.media_id);
+		this.props.getSnapshot(this.props.data.id);
 	};
 	showFullScreenPreview = () => {
 		this.props.changeScreen({

@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import classNames from 'classnames/bind';
 import Icon from '@enact/sandstone/Icon';
+import Popup from '@enact/sandstone/Popup';
 import MainScreen from './MainScreen/MainScreen';
 import getCameraList from '../actions/getCameraList';
 import FullScreenPreview from './FullScreenPreview/FullScreenPreview';
@@ -26,6 +27,7 @@ class MainPanel extends React.Component {
 	};
 	render() {
 		const {name, data} = this.props.screen;
+		const popupMessage = this.props.popup;
 		return (
 			<div className={cx('mainpanel')}>
 				<div>
@@ -33,17 +35,17 @@ class MainPanel extends React.Component {
 						closex
 					</Icon>
 				</div>
-
 				{name === 'main' ? (
 					<MainScreen />
 				) : (
 					<FullScreenPreview data={{...data}} />
 				)}
+				<Popup open={popupMessage !== ''}>{popupMessage}</Popup>
 			</div>
 		);
 	}
 }
-const mapStateToProps = ({screen}) => ({screen});
+const mapStateToProps = ({screen, popup}) => ({screen, popup});
 const mapDispatchToProps = (dispatch) => ({
 	getCameraList: () => dispatch(getCameraList())
 });
