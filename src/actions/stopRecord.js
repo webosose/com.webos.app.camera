@@ -1,5 +1,6 @@
 import lunaAction from './lunaActions';
 import changeScreen from './changeScreen';
+import syncMedia from './syncMedia';
 const stopRecord = (id, ui) => (dispatch, getState) => {
 	const camera = getState().cameraStatus.find((value) => value.id === id);
 	if (ui === 'footer') {
@@ -31,6 +32,7 @@ const stopRecord = (id, ui) => (dispatch, getState) => {
 			},
 			(res) => {
 				console.log('stopRecord:', res);
+				syncMedia();
 				if (res.returnValue) {
 					dispatch({
 						type: 'STOP_RECORDING',

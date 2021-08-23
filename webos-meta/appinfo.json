@@ -10,6 +10,8 @@
    "disallowScrollingInMainFrame":false,
    "trustLevel":"trusted",
    "requiredPermissions":[
+      "application.launcher",
+      "application.operation",
       "camera.query",
       "camera.operation",
       "media.operation",

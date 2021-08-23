@@ -19,7 +19,7 @@ class App extends React.Component {
 
 	componentDidMount = () => {
 		document.addEventListener('webOSLaunch', this.onLaunch);
-		document.addEventListener('webOSRelaunch', this.onLaunch);
+		// document.addEventListener('webOSRelaunch', this.onLaunch);
 		document.addEventListener('webOSLocaleChange', () => {
 			window.location.reload();
 		});

@@ -1,7 +1,6 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import classNames from 'classnames/bind';
-import Icon from '@enact/sandstone/Icon';
 import Popup from '@enact/sandstone/Popup';
 import MainScreen from './MainScreen/MainScreen';
 import getCameraList from '../actions/getCameraList';
@@ -20,21 +19,11 @@ class MainPanel extends React.Component {
 	getCameraList = () => {
 		this.props.getCameraList();
 	};
-	handleClose = () => {
-		if (typeof window !== 'undefined') {
-			window.close();
-		}
-	};
 	render() {
 		const {name, data} = this.props.screen;
 		const popupMessage = this.props.popup;
 		return (
 			<div className={cx('mainpanel')}>
-				<div>
-					<Icon className={cx('closeIcon')} onClick={this.handleClose}>
-						closex
-					</Icon>
-				</div>
 				{name === 'main' ? (
 					<MainScreen />
 				) : (

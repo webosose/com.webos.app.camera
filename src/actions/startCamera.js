@@ -16,7 +16,6 @@ const open = (id) => {
 	});
 };
 const setFormat = (handle) => {
-	console.log('setFormat' + handle);
 	return new Promise((resolve) => {
 		lunaAction(
 			{
@@ -33,8 +32,7 @@ const setFormat = (handle) => {
 				},
 				resolve: resolve
 			},
-			(res) => {
-				console.log(JSON.stringify(res));
+			() => {
 				resolve(handle);
 			}
 		);
@@ -56,8 +54,6 @@ const startPreview = (handle) => {
 				resolve: resolve
 			},
 			(res) => {
-				console.log(JSON.stringify(res));
-
 				resolve({
 					handle,
 					memsrc: res.key + ''
@@ -67,7 +63,6 @@ const startPreview = (handle) => {
 	});
 };
 const startCamera = (id) => {
-	console.log('startCamera: ' + id);
 	return new Promise((resolve) => {
 		open(id)
 			.then((handle) => {

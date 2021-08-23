@@ -46,6 +46,7 @@ class CameraList extends React.Component {
 				<BodyText className={cx('camtitle')}>Device</BodyText>
 				<div className={cx('checkbox_cont')}>
 					<CheckboxItem
+						className={cx('checkbox_item')}
 						selected={isAllSelected}
 						onToggle={this.selectAllCamera}
 						disabled={disable}
@@ -54,6 +55,7 @@ class CameraList extends React.Component {
 					</CheckboxItem>
 					{cameralist.map((v) => (
 						<CheckboxItem
+							className={cx('checkbox_item')}
 							key={v.id}
 							cameraid={v.id}
 							selected={selectedCameras.indexOf(v.id) > -1}

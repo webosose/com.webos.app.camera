@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import classNames from 'classnames/bind';
 import Image from '@enact/sandstone/Image';
+import Item from '@enact/sandstone/Item';
 import fullscreenIcon from '../../public/Icons/full screen.svg';
 import stopRecordIcon from '../../public/Icons/StopRecording.svg';
 import recordingIcon from '../../public/Icons/recording.svg';
@@ -12,6 +13,7 @@ import startRecord from '../actions/startRecord';
 import stopRecord from '../actions/stopRecord';
 import getSnapshot from '../actions/getSnapshot';
 import {updateMediaID} from '../actions/updateCameraStatus';
+import launch from '../actions/launchActions';
 import css from './CameraPreview.module.less';
 
 const cx = classNames.bind(css);
@@ -59,7 +61,12 @@ class CameraPreview extends React.Component {
 			data: {...this.props.data}
 		});
 	};
-
+	launchVideoPalyer = () => {
+		this.props.launch('videoList');
+	};
+	launchImageViewer = () => {
+		this.props.launch('imageList');
+	};
 	render = () => {
 		//debugger;
 		const showOption =
@@ -67,10 +74,8 @@ class CameraPreview extends React.Component {
 		const {recording} = this.props.data;
 		const cameraOptions = escape(JSON.stringify(this.option));
 		const type = 'service/webos-camera;cameraOption=' + cameraOptions;
-		console.log('cameraOptions:  ', this.props.data);
-		// console.log('cameraOptions escape:  ', cameraOptions);
 		return (
-			<div className={cx('videocont')} onClick={this.openOptions}>
+			<div className={cx('cont')} onClick={this.openOptions}>
 				{showOption ? (
 					<div className={cx('videooption')}>
 						<Image
@@ -92,11 +97,14 @@ class CameraPreview extends React.Component {
 				) : (
 					''
 				)}
-				{recording ? (
-					<Image src={recordingIcon} className={cx('rec_icon')} />
-				) : (
-					''
-				)}
+				<div className={cx('vide_cont')}>
+					<Item className={cx('footage')}>{this.props.data.id}</Item>
+					{recording ? (
+						<Image src={recordingIcon} className={cx('rec_icon')} />
+					) : (
+						''
+					)}
+				</div>
 				<video ref={this.videoRef}>
 					<source src='camera://com.webos.service.camera2/' type={type} />
 					{/* <source src='file:///media/multimedia/Record05082021-23260371.mp4'/> */}
@@ -138,6 +146,7 @@ const mapDispatchToProps = (dispatch) => ({
 	startRecord: (mediaID, cameraID) => dispatch(startRecord(mediaID, cameraID)),
 	stopRecord: (mediaID, cameraID) => dispatch(stopRecord(mediaID, cameraID)),
 	getSnapshot: (mediaID) => dispatch(getSnapshot(mediaID)),
-	updateMediaID: (data) => dispatch(updateMediaID(data))
+	updateMediaID: (data) => dispatch(updateMediaID(data)),
+	launch: (type) => dispatch(launch(type))
 });
 export default connect(mapStateToProps, mapDispatchToProps)(CameraPreview);

@@ -13,6 +13,7 @@ import startRecord from '../../actions/startRecord';
 import stopRecord from '../../actions/stopRecord';
 import getSnapshot from '../../actions/getSnapshot';
 import changeScreen from '../../actions/changeScreen';
+import launch from '../../actions/launchActions';
 import snapshoIcon from '../../../public/Icons/snapshot.svg';
 import videoPlayerIcon from '../../../public/Icons/Video player.svg';
 import imagePlayerIcon from '../../../public/Icons/Image viewer.svg';
@@ -75,6 +76,12 @@ class Footer extends React.Component {
 			);
 		});
 	};
+	launchVideoPalyer = () => {
+		this.props.launch('videoList');
+	};
+	launchImageViewer = () => {
+		this.props.launch('imageList');
+	};
 	render() {
 		const disable =
 			this.props.selectedCameras.length === 0 ||
@@ -106,8 +113,16 @@ class Footer extends React.Component {
 						onClick={this.takeSnapShot}
 						className={cx('icon')}
 					/>
-					<Image src={videoPlayerIcon} className={cx('icon')} />
-					<Image src={imagePlayerIcon} className={cx('icon')} />
+					<Image
+						src={videoPlayerIcon}
+						onClick={this.launchVideoPalyer}
+						className={cx('icon')}
+					/>
+					<Image
+						src={imagePlayerIcon}
+						onClick={this.launchImageViewer}
+						className={cx('icon')}
+					/>
 				</div>
 				<div className={cx('row')} />
 			</div>
@@ -125,8 +140,9 @@ const mapDispatchToProps = (dispatch) => ({
 	changeScreen: (data) => dispatch(changeScreen(data)),
 	closeCameras: (handle) => dispatch(closeCameras(handle)),
 	getCameraList: () => dispatch(getCameraList()),
-	startRecord: (mediaID, cameraID) => dispatch(startRecord(mediaID, cameraID)),
-	stopRecord: (mediaID, cameraID) => dispatch(stopRecord(mediaID, cameraID)),
-	getSnapshot: (mediaID) => dispatch(getSnapshot(mediaID))
+	startRecord: (mediaID, ui) => dispatch(startRecord(mediaID, ui)),
+	stopRecord: (mediaID, ui) => dispatch(stopRecord(mediaID, ui)),
+	getSnapshot: (mediaID) => dispatch(getSnapshot(mediaID)),
+	launch: (type) => dispatch(launch(type))
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Footer);

@@ -6,7 +6,8 @@ import changeScreen from '../../actions/changeScreen';
 import startRecord from '../../actions/startRecord';
 import stopRecord from '../../actions/stopRecord';
 import getSnapshot from '../../actions/getSnapshot';
-
+import {updateMediaID} from '../../actions/updateCameraStatus';
+import launch from '../../actions/launchActions';
 import css from './FullScreenPreview.module.less';
 import backIcon from '../../../public/Icons/Back.svg';
 import recordingIcon from '../../../public/Icons/recording.svg';
@@ -34,24 +35,28 @@ class FullScreenPreview extends React.Component {
 		};
 	}
 	goToMainScreen = () => {
-		console.log('goToMainScreen');
 		this.props.changeScreen({
 			name: 'main',
 			data: {}
 		});
 	};
 	takePhoto = () => {
-		console.log('takePhoto');
-		this.props.getSnapshot(this.props.data.id);
+		this.props.getSnapshot(this.option.option.id);
 	};
 	recordVideo = () => {
 		if (this.state.recording) {
 			this.setState({recording: false});
-			this.props.stopRecord(this.props.data.id);
+			this.props.stopRecord(this.option.option.id);
 		} else {
 			this.setState({recording: true});
-			this.props.startRecord(this.props.data.id);
+			this.props.startRecord(this.option.option.id);
 		}
+	};
+	launchVideoPalyer = () => {
+		this.props.launch('videoList');
+	};
+	launchImageViewer = () => {
+		this.props.launch('imageList');
 	};
 	render() {
 		const {recording} = this.state;
@@ -82,8 +87,18 @@ class FullScreenPreview extends React.Component {
 						</div>
 					</div>
 					<div className={cx('righicon_con')}>
-						<img src={videoPlayerIcon} alt='' className={cx('icon')} />
-						<img src={imagePlayerIcon} alt='' className={cx('icon')} />
+						<img
+							src={videoPlayerIcon}
+							onClick={this.launchVideoPalyer}
+							alt=''
+							className={cx('icon')}
+						/>
+						<img
+							src={imagePlayerIcon}
+							onClick={this.launchImageViewer}
+							alt=''
+							className={cx('icon')}
+						/>
 						<img
 							src={recording ? stopRecordIcon : StarRecording}
 							alt=''
@@ -107,8 +122,10 @@ class FullScreenPreview extends React.Component {
 	}
 	getupdatecamerastate = (e) => {
 		const obj = JSON.parse(e.detail);
-		console.log('detail msg :: ' + obj.mediaId);
-		this.media_id = obj.mediaId;
+		this.props.updateMediaID({
+			id: this.option.option.id,
+			media_id: obj.mediaId
+		});
 	};
 	componentDidMount = () => {
 		this.videoRef.current.load();
@@ -129,6 +146,8 @@ const mapDispatchToProps = (dispatch) => ({
 	changeScreen: (data) => dispatch(changeScreen(data)),
 	startRecord: (mediaID, cameraID) => dispatch(startRecord(mediaID, cameraID)),
 	stopRecord: (mediaID, cameraID) => dispatch(stopRecord(mediaID, cameraID)),
-	getSnapshot: (mediaID) => dispatch(getSnapshot(mediaID))
+	updateMediaID: (data) => dispatch(updateMediaID(data)),
+	getSnapshot: (mediaID) => dispatch(getSnapshot(mediaID)),
+	launch: (type) => dispatch(launch(type))
 });
 export default connect(null, mapDispatchToProps)(FullScreenPreview);

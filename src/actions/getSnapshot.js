@@ -1,5 +1,7 @@
 import lunaAction from './lunaActions';
 import {showPopup, hidePopup} from './changeScreen';
+import syncMedia from './syncMedia';
+
 const getSnapshot =
 	(id, popup = true) =>
 	(dispatch, getState) => {
@@ -19,10 +21,10 @@ const getSnapshot =
 					},
 					resolve: resolve
 				},
-				(res) => {
-					console.log('getSnapshot:', res);
+				() => {
 					if (popup) {
 						dispatch(showPopup('Snapshot has been taken successfully.'));
+						setTimeout(() => syncMedia(), 1000);
 						setTimeout(() => dispatch(hidePopup()), 2000);
 					}
 				}
