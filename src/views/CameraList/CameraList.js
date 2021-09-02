@@ -13,7 +13,7 @@ class CameraList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			selectedCamera: props.selectedCamers || []
+			selectedCamera: props.selectedCameras || []
 		};
 	}
 	selectAllCamera = (event) => {
@@ -26,12 +26,13 @@ class CameraList extends React.Component {
 	};
 	selectCamera = (event) => {
 		const id = event.currentTarget.getAttribute('cameraid');
-		const index = this.props.selectedCameras.indexOf(id);
+		const old_selectedCameras = this.props.selectedCameras;
+		const index = old_selectedCameras.indexOf(id);
 		let selectedCameras = [];
 		if (index > -1) {
-			selectedCameras = [...this.props.selectedCameras.filter((v) => v !== id)];
+			selectedCameras = [...old_selectedCameras.filter((v) => v !== id)];
 		} else {
-			selectedCameras = [...this.props.selectedCameras, id];
+			selectedCameras = [...old_selectedCameras, id];
 		}
 		this.props.setSelectedCamers(selectedCameras);
 	};

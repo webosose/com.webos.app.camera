@@ -27,7 +27,9 @@ const stopRecord = (id, ui) => (dispatch, getState) => {
 			{
 				service: 'luna://com.webos.media',
 				method: 'stopCameraRecord',
-				parameters: {mediaId: camera.media_id},
+				parameters: {
+					mediaId: camera.media_id
+				},
 				resolve: resolve
 			},
 			(res) => {
