@@ -16,6 +16,7 @@ const stopRecord = (id, ui) => (dispatch, getState) => {
 		dispatch(
 			changeScreen({
 				data: {
+					...camera,
 					disableCamList: false,
 					disablFooterRecording: false
 				}

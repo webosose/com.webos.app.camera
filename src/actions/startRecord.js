@@ -15,6 +15,7 @@ const startRecord = (id, ui) => (dispatch, getState) => {
 		dispatch(
 			changeScreen({
 				data: {
+					...camera,
 					disableCamList: true,
 					disablFooterRecording: true
 				}
@@ -30,7 +31,7 @@ const startRecord = (id, ui) => (dispatch, getState) => {
 					mediaId: camera.media_id,
 					location: '/media/multimedia/video-',
 					format: 'MP4',
-					audio: false,
+					audio: true,
 					audioSrc: 'pcm_input'
 				},
 				resolve: resolve

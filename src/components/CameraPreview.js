@@ -23,12 +23,6 @@ class CameraPreview extends React.Component {
 		super(props);
 		this.videoRef = React.createRef();
 		// console.log("props.data..",props.data)
-		this.option = {
-			mediaTransportType: 'CAMERA',
-			option: {
-				...props.data
-			}
-		};
 		this.state = {
 			showOption: false
 		};
@@ -67,13 +61,31 @@ class CameraPreview extends React.Component {
 	launchImageViewer = () => {
 		this.props.launch('imageList');
 	};
+	getAspectRation = () => {
+		const {width, height} = this.props.data;
+		const ratio = (width / height).toFixed(2);
+		console.log(ratio);
+		if (ratio === '1.33') {
+			return 'video_4_3';
+		} else if (ratio === '1.78') {
+			return 'video_16_9';
+		}
+		return 'video_default';
+	};
 	render = () => {
 		//debugger;
+		const option = {
+			mediaTransportType: 'CAMERA',
+			option: {
+				...this.props.data
+			}
+		};
 		const showOption =
 			this.state.showOption && !this.props.screen.data.disablPreviewOption;
 		const {recording} = this.props.data;
-		const cameraOptions = escape(JSON.stringify(this.option));
+		const cameraOptions = escape(JSON.stringify(option));
 		const type = 'service/webos-camera;cameraOption=' + cameraOptions;
+		console.log('Main Screen:  ', JSON.stringify(option));
 		return (
 			<div className={cx('cont')} onClick={this.openOptions}>
 				{showOption ? (
@@ -97,18 +109,22 @@ class CameraPreview extends React.Component {
 				) : (
 					''
 				)}
-				<div className={cx('vide_cont')}>
-					<Item className={cx('footage')}>{this.props.data.id}</Item>
-					{recording ? (
-						<Image src={recordingIcon} className={cx('rec_icon')} />
-					) : (
-						''
-					)}
+				<div className={cx('video_cont')}>
+					<div className={cx('header')}>
+						<Item className={cx('footage')}>
+							{this.props.name || this.props.data.id}
+						</Item>
+						{recording ? (
+							<Image src={recordingIcon} className={cx('rec_icon')} />
+						) : (
+							''
+						)}
+					</div>
+					<video ref={this.videoRef} className={cx(this.getAspectRation())}>
+						<source src='camera://com.webos.service.camera2/' type={type} />
+						{/* <source src='file:///media/multimedia/Record05082021-23260371.mp4'/> */}
+					</video>
 				</div>
-				<video ref={this.videoRef}>
-					<source src='camera://com.webos.service.camera2/' type={type} />
-					{/* <source src='file:///media/multimedia/Record05082021-23260371.mp4'/> */}
-				</video>
 			</div>
 		);
 	};
@@ -136,9 +152,11 @@ class CameraPreview extends React.Component {
 		);
 	};
 }
-const mapStateToProps = ({screen}) => {
+const mapStateToProps = ({screen, settings}, ownProps) => {
+	const {name} = settings.find((v) => v.id === ownProps.data.id);
 	return {
-		screen
+		screen,
+		name
 	};
 };
 const mapDispatchToProps = (dispatch) => ({

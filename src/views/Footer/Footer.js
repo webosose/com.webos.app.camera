@@ -18,6 +18,7 @@ import snapshoIcon from '../../../public/Icons/snapshot.svg';
 import videoPlayerIcon from '../../../public/Icons/Video player.svg';
 import imagePlayerIcon from '../../../public/Icons/Image viewer.svg';
 import css from './Footer.module.less';
+import {setSelectedResolution}  from '../../actions/settings';
 
 const cx = classNames.bind(css);
 
@@ -143,6 +144,7 @@ const mapDispatchToProps = (dispatch) => ({
 	startRecord: (mediaID, ui) => dispatch(startRecord(mediaID, ui)),
 	stopRecord: (mediaID, ui) => dispatch(stopRecord(mediaID, ui)),
 	getSnapshot: (mediaID) => dispatch(getSnapshot(mediaID)),
-	launch: (type) => dispatch(launch(type))
+	launch: (type) => dispatch(launch(type)),
+	setSelectedResolution:(ressolution) => dispatch(setSelectedResolution(ressolution)),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Footer);

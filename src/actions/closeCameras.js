@@ -11,15 +11,14 @@ const closePreview = (handle) => {
 				},
 				resolve: resolve
 			},
-			(res) => {
-				console.log('stopPreview:', handle);
-				console.log('stopPreview:', res);
+			() => {
+				//console.log(handle+'stopPreview: '+JSON.stringify(res));
 				resolve();
 			}
 		);
 	});
 };
-const closeCamera = (handle) => {
+export const closeCamera = (handle) => () => {
 	return closePreview(handle).then(() => {
 		return new Promise((resolve) => {
 			lunaAction(
@@ -31,9 +30,8 @@ const closeCamera = (handle) => {
 					},
 					resolve: resolve
 				},
-				(res) => {
-					console.log('closeCamera:', handle);
-					console.log('closeCamera:', res);
+				() => {
+					//console.log(handle+'closeCamera: '+JSON.stringify(res));
 					resolve();
 				}
 			);
@@ -43,7 +41,7 @@ const closeCamera = (handle) => {
 const closeCameras = (refresh) => async (dispatch, getState) => {
 	const cameraStatus = getState().cameraStatus;
 	for (const camera of cameraStatus) {
-		await closeCamera(camera.handle);
+		await dispatch(closeCamera(camera.handle));
 	}
 	if (refresh) {
 		dispatch(getCameraList());

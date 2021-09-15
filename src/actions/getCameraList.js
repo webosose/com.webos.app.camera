@@ -1,30 +1,17 @@
 import lunaAction from './lunaActions';
+import {clearSettings} from './settings';
 import startCamera from './startCamera';
-import {addCameraStatus} from './updateCameraStatus';
+
 const updateCameraStatus = (list) => (dispatch) => {
 	list.forEach(({id}) => {
-		startCamera(id).then((res) => {
-			console.log('CameraCont componentDidMount: ', res);
-			dispatch(
-				addCameraStatus({
-					id: id,
-					width: 1280,
-					height: 720,
-					frameRate: 30,
-					format: 'JPEG',
-					streamType: 'JPEG',
-					memType: 'shmem',
-					memSrc: res.memsrc,
-					handle: res.handle
-				})
-			);
-		});
+		dispatch(startCamera(id));
 	});
 };
 const getCameraList = () => (dispatch) => {
 	dispatch({
 		type: 'CLEAR_CAMERA_STATUS'
 	});
+	dispatch(clearSettings());
 	return new Promise((resolve) => {
 		lunaAction(
 			{
