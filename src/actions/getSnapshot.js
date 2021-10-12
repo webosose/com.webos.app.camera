@@ -6,6 +6,7 @@ const getSnapshot =
 	(id, popup = true) =>
 	(dispatch, getState) => {
 		const camera = getState().cameraStatus.find((value) => value.id === id);
+		const {width,height} = getState().settings.find((v) => v.id === id).selRes;
 		return new Promise((resolve) => {
 			lunaAction(
 				{
@@ -15,8 +16,8 @@ const getSnapshot =
 						mediaId: camera.media_id,
 						location: '/media/multimedia/image-',
 						format: 'jpg',
-						width: 1280,
-						height: 720,
+						width,
+						height,
 						pictureQuality: 30
 					},
 					resolve: resolve

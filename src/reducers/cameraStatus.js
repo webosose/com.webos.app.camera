@@ -26,12 +26,13 @@ const cameraStatus = (state = [], action) => {
 		case 'UPDATE_PREVIEW_RESOLUTION':
 			return state.map((v) => {
 				if (v.id === action.payload.id) {
-					return {...action.payload};
+					return {...v, ...action.payload};
 				}
 				return v;
 			});
 		case 'CLEAR_CAMERA_STATUS':
 			return [];
+
 		default:
 			return state;
 	}

@@ -53,7 +53,9 @@ const setFormat = (handle, selRes) => {
 				resolve: resolve
 			},
 			(res) => {
-				console.log(JSON.stringify(selRes) + '' + JSON.stringify(res));
+				console.log(
+					handle+'  setFormat: ' + JSON.stringify(selRes) + '' + JSON.stringify(res)
+				);
 				resolve(handle);
 			}
 		);
@@ -104,12 +106,19 @@ const startCamera = (id, changeResolution) => (dispatch, getState) => {
 			})
 			.then((res) => {
 				console.log('CameraCont componentDidMount: ', res);
-				const {selRes} = getState().settings.find((v) => v.id === id);
+				const {
+					width,
+					height,
+					fps: frameRate
+				} = getState().settings.find((v) => v.id === id).selRes;
+
 				if (changeResolution) {
 					dispatch(
 						updatPreviewResolution({
 							id: id,
-							...selRes,
+							width,
+							height,
+							frameRate,
 							format: 'JPEG',
 							streamType: 'JPEG',
 							memType: 'shmem',
@@ -121,7 +130,9 @@ const startCamera = (id, changeResolution) => (dispatch, getState) => {
 					dispatch(
 						addCameraStatus({
 							id: id,
-							...selRes,
+							width,
+							height,
+							frameRate,
 							format: 'JPEG',
 							streamType: 'JPEG',
 							memType: 'shmem',

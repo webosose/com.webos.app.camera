@@ -12,7 +12,6 @@ class CamerasGrid extends React.Component {
 	}
 	render = () => {
 		const {cameraStatus} = this.props;
-		// console.log('CamerasGrid render: ' + JSON.stringify(cameraStatus));
 		return (
 			<div>
 				<div className={cx('grid')}>
@@ -34,4 +33,5 @@ const mapStateToProps = ({cameraStatus}) => {
 		cameraStatus: cameraStatus
 	};
 };
+
 export default connect(mapStateToProps)(CamerasGrid);

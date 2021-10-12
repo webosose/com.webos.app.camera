@@ -4,8 +4,7 @@ import Input from '@enact/sandstone/Input';
 import BodyText from '@enact/sandstone/BodyText';
 import Dropdown from '@enact/sandstone/Dropdown';
 import Button from '@enact/sandstone/Button';
-import startCamera from '../../actions/startCamera';
-import {closeCamera} from '../../actions/closeCameras';
+
 import {setSelectedResolution, setSelectedName} from '../../actions/settings';
 import closeIcon from '../../../public/Icons/Close.svg';
 import css from './Settings.module.less';
@@ -26,28 +25,25 @@ class Settings extends React.Component {
 		this.props.closeSettings();
 	};
 	saveSettings = () => {
-		const [width, height, fps] = this.props.resolutions[
-			this.state.selectedIndex
-		]
-			.split(',')
-			.map((v) => parseInt(v));
 		const resolutionsChange =
 			this.props.selectedIndex !== this.state.selectedIndex;
 		const nameChange = this.props.name !== this.state.inputText;
-		const {id, handle} = this.props;
+		const {id} = this.props;
 		if (resolutionsChange) {
-			this.props.setSelectedResolution({
-				id,
-				width,
-				height,
-				fps
-			});
-			this.props.showLoading();
-			this.props.closeCamera(handle).then(() => {
-				this.props.startCamera(id).then(() => {
-					this.props.closeSettings();
+			if (this.state.selectedIndex > -1) {
+				const [width, height, fps] = this.props.resolutions[
+					this.state.selectedIndex
+				]
+					.split(',')
+					.map((v) => parseInt(v));
+				this.props.setSelectedResolution({
+					id,
+					width,
+					height,
+					fps
 				});
-			});
+				this.props.showLoading();
+			}
 		}
 		if (nameChange) {
 			const {inputText: name} = this.state;
@@ -129,17 +125,16 @@ const mapStateToProps = ({settings, cameraStatus}, ownProps) => {
 		(v) => v.id === ownProps.id
 	);
 	const selectedIndex = resolutions.indexOf(Object.values(selRes).join(','));
-	const handle = cameraStatus.find((v) => v.id === ownProps.id).handle;
+	const {handle, media_id} = cameraStatus.find((v) => v.id === ownProps.id);
 	return {
 		resolutions,
 		selectedIndex,
 		handle,
+		media_id,
 		name
 	};
 };
 const mapDispatchToProps = (dispatch) => ({
-	startCamera: (id) => dispatch(startCamera(id, true)),
-	closeCamera: (handle) => dispatch(closeCamera(handle)),
 	setSelectedResolution: (resolutions) =>
 		dispatch(setSelectedResolution(resolutions)),
 	setSelectedName: (name) => dispatch(setSelectedName(name))

@@ -6,6 +6,8 @@ import changeScreen from '../../actions/changeScreen';
 import startRecord from '../../actions/startRecord';
 import stopRecord from '../../actions/stopRecord';
 import getSnapshot from '../../actions/getSnapshot';
+import startCamera from '../../actions/startCamera';
+import {closeCamera} from '../../actions/closeCameras';
 import {updateMediaID} from '../../actions/updateCameraStatus';
 import launch from '../../actions/launchActions';
 import css from './FullScreenPreview.module.less';
@@ -18,6 +20,7 @@ import stopRecordIcon from '../../../public/Icons/StopRecording.svg';
 import StarRecording from '../../../public/Icons/StarRecording.svg';
 import settingsIcon from '../../../public/Icons/settings.svg';
 import Settings from '../../components/Settings/Settings';
+import VideoContainer from '../../components/VideoContainer/VideoContainer';
 
 const cx = classNames.bind(css);
 
@@ -30,12 +33,16 @@ class FullScreenPreview extends React.Component {
 			loading: false
 		};
 		this.videoRef = React.createRef();
-		// console.log("props.data..",props.data)
 	}
 	goToMainScreen = () => {
-		this.props.changeScreen({
-			name: 'main',
-			data: {}
+		//getting black screen when remove the video so first removed container
+		let video_cont = document.getElementById('video_cont');
+		video_cont.remove();
+		setTimeout(() => {
+			this.props.changeScreen({
+				name: 'main',
+				data: {}
+			});
 		});
 	};
 	takePhoto = () => {
@@ -68,21 +75,35 @@ class FullScreenPreview extends React.Component {
 		});
 	};
 	showLoading = () => {
-		this.setState({
-			loading: true,
-			showSettings: false
-		});
+		// //getting black screen when remove the video so first removed container
+		// let video_cont = document.getElementById('video_cont');
+		// video_cont.style.display = 'none';
+		this.setState(
+			{
+				loading: true,
+				showSettings: false
+			},
+			() => {
+				const {handle, media_id, id} = this.props.details;
+				setTimeout(() => {
+					this.props.closeCamera(handle, media_id).then(() => {
+						this.props.startCamera(id).then(() => {
+							this.closeSettings();
+						});
+					});
+				}, 500);
+			}
+		);
 	};
 	getAspectRation = () => {
 		const {width, height} = this.props.details;
 		const ratio = (width / height).toFixed(2);
-		console.log(ratio);
 		if (ratio === '1.33') {
-			return 'video_4_3';
+			return '69%';
 		} else if (ratio === '1.78') {
-			return 'video_16_9';
+			return '100%';
 		}
-		return 'video_default';
+		return '50%';
 	};
 	render() {
 		const option = {
@@ -91,12 +112,10 @@ class FullScreenPreview extends React.Component {
 				...this.props.details
 			}
 		};
-
 		const {recording, showSettings, loading} = this.state;
 		const cameraOptions = escape(JSON.stringify(option));
 		const type = 'service/webos-camera;cameraOption=' + cameraOptions;
-		console.log('cameraOptions:  ', JSON.stringify(option));
-		console.log(this.getAspectRation());
+		// console.log('Full Screen cameraOptions:  ', JSON.stringify(option));
 		return (
 			<div className={cx('cont')}>
 				<div className={cx('inner_con')}>
@@ -163,45 +182,25 @@ class FullScreenPreview extends React.Component {
 						)}
 					</div>
 				</div>
-				<div className={cx('video_cont')}>
-					{loading ? (
+
+				{loading ? (
+					<div className={cx('spinner_cont')}>
 						<Spinner>Video Loading...</Spinner>
-					) : (
-						<video ref={this.videoRef} className={cx(this.getAspectRation())}>
-							{/* <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4"/> */}
-							<source src='camera://com.webos.service.camera2/' type={type} />
-						</video>
-					)}
-				</div>
+					</div>
+				) : (
+					<div id='video_cont' className={cx('video_cont')}>
+						<VideoContainer
+							media_id={this.props.data.media_id}
+							id={this.props.data.id}
+							width={this.getAspectRation()}
+							type={type}
+							className={cx(this.getAspectRation())}
+						/>
+					</div>
+				)}
 			</div>
 		);
 	}
-	getupdatecamerastate = (e) => {
-		const obj = JSON.parse(e.detail);
-		this.props.updateMediaID({
-			id: this.props.details.id,
-			media_id: obj.mediaId
-		});
-	};
-	componentDidMount = () => {
-		this.videoRef.current.addEventListener(
-			'updatecamerastate',
-			this.getupdatecamerastate
-		);
-	};
-	componentDidUpdate = (prevProps) => {
-		if (prevProps.details.handle !== this.props.details.handle) {
-			if (this.videoRef.current) {
-				this.videoRef.current.load();
-			}
-		}
-	};
-	componentWillUnmount = () => {
-		this.videoRef.current.removeEventListener(
-			'updatecamerastate',
-			this.getupdatecamerastate
-		);
-	};
 }
 const mapStateToProps = ({cameraStatus}, ownProps) => {
 	const details = cameraStatus.find((v) => v.id === ownProps.data.id);
@@ -215,6 +214,8 @@ const mapDispatchToProps = (dispatch) => ({
 	stopRecord: (mediaID, cameraID) => dispatch(stopRecord(mediaID, cameraID)),
 	updateMediaID: (data) => dispatch(updateMediaID(data)),
 	getSnapshot: (mediaID) => dispatch(getSnapshot(mediaID)),
-	launch: (type) => dispatch(launch(type))
+	launch: (type) => dispatch(launch(type)),
+	startCamera: (id) => dispatch(startCamera(id, true)),
+	closeCamera: (handle, media_id) => dispatch(closeCamera(handle, media_id))
 });
 export default connect(mapStateToProps, mapDispatchToProps)(FullScreenPreview);

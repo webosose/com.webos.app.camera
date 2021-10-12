@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import classNames from 'classnames/bind';
 import Image from '@enact/sandstone/Image';
-import Item from '@enact/sandstone/Item';
+import BodyText from '@enact/sandstone/BodyText';
 import fullscreenIcon from '../../public/Icons/full screen.svg';
 import stopRecordIcon from '../../public/Icons/StopRecording.svg';
 import recordingIcon from '../../public/Icons/recording.svg';
@@ -15,14 +15,13 @@ import getSnapshot from '../actions/getSnapshot';
 import {updateMediaID} from '../actions/updateCameraStatus';
 import launch from '../actions/launchActions';
 import css from './CameraPreview.module.less';
+import VideoContainer from './VideoContainer/VideoContainer';
 
 const cx = classNames.bind(css);
 
 class CameraPreview extends React.Component {
 	constructor(props) {
 		super(props);
-		this.videoRef = React.createRef();
-		// console.log("props.data..",props.data)
 		this.state = {
 			showOption: false
 		};
@@ -64,13 +63,12 @@ class CameraPreview extends React.Component {
 	getAspectRation = () => {
 		const {width, height} = this.props.data;
 		const ratio = (width / height).toFixed(2);
-		console.log(ratio);
 		if (ratio === '1.33') {
-			return 'video_4_3';
+			return '75%';
 		} else if (ratio === '1.78') {
-			return 'video_16_9';
+			return '100%';
 		}
-		return 'video_default';
+		return '50%';
 	};
 	render = () => {
 		//debugger;
@@ -85,7 +83,7 @@ class CameraPreview extends React.Component {
 		const {recording} = this.props.data;
 		const cameraOptions = escape(JSON.stringify(option));
 		const type = 'service/webos-camera;cameraOption=' + cameraOptions;
-		console.log('Main Screen:  ', JSON.stringify(option));
+		// console.log('Main Screen cameraOptions: ', JSON.stringify(option));
 		return (
 			<div className={cx('cont')} onClick={this.openOptions}>
 				{showOption ? (
@@ -100,58 +98,43 @@ class CameraPreview extends React.Component {
 							className={cx('icon')}
 							onClick={this.takeSnapShot}
 						/>
-						<Image
-							src={fullscreenIcon}
-							className={cx('icon')}
-							onClick={this.showFullScreenPreview}
-						/>
+						{!recording ? (
+							<Image
+								src={fullscreenIcon}
+								className={cx('icon')}
+								onClick={this.showFullScreenPreview}
+							/>
+						) : (
+							''
+						)}
 					</div>
 				) : (
 					''
 				)}
 				<div className={cx('video_cont')}>
 					<div className={cx('header')}>
-						<Item className={cx('footage')}>
+						<BodyText className={cx('footage')}>
 							{this.props.name || this.props.data.id}
-						</Item>
+						</BodyText>
 						{recording ? (
 							<Image src={recordingIcon} className={cx('rec_icon')} />
 						) : (
 							''
 						)}
 					</div>
-					<video ref={this.videoRef} className={cx(this.getAspectRation())}>
-						<source src='camera://com.webos.service.camera2/' type={type} />
-						{/* <source src='file:///media/multimedia/Record05082021-23260371.mp4'/> */}
-					</video>
+					<VideoContainer
+						media_id={this.props.data.media_id}
+						id={this.props.data.id}
+						width={this.getAspectRation()}
+						type={type}
+						className={cx(this.getAspectRation())}
+					/>
 				</div>
 			</div>
 		);
 	};
-	getupdatecamerastate = (e) => {
-		const obj = JSON.parse(e.detail);
-		console.log('detail msg :: ' + obj.mediaId);
-		if (this.props.data.media_id !== obj.mediaId) {
-			this.props.updateMediaID({
-				id: this.props.data.id,
-				media_id: obj.mediaId
-			});
-		}
-	};
-	componentDidMount = () => {
-		this.videoRef.current.load();
-		this.videoRef.current.addEventListener(
-			'updatecamerastate',
-			this.getupdatecamerastate
-		);
-	};
-	componentWillUnmount = () => {
-		this.videoRef.current.removeEventListener(
-			'updatecamerastate',
-			this.getupdatecamerastate
-		);
-	};
 }
+
 const mapStateToProps = ({screen, settings}, ownProps) => {
 	const {name} = settings.find((v) => v.id === ownProps.data.id);
 	return {

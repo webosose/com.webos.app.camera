@@ -7,8 +7,13 @@ export const addSettings = (id, resolutions) => {
 		}
 		return false;
 	});
+	resolutions = resolutions.map((v) => {
+		const [w, h] = v.split(',');
+		const f = w <= 900 ? 15 : 10;
+		return [w, h, f].toString();
+	});
 	const selectResolution =
-		resolutions.length > 0 ? resolutions[resolutions.length - 1] : '640,480,30';
+		resolutions.length > 0 ? resolutions[resolutions.length - 1] : '640,480,15';
 	const [width, height, fps] = selectResolution
 		.split(',')
 		.map((v) => parseInt(v));

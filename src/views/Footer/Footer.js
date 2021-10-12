@@ -2,7 +2,6 @@ import Image from '@enact/sandstone/Image';
 import React from 'react';
 import {connect} from 'react-redux';
 import classNames from 'classnames/bind';
-import closeCameras from '../../actions/closeCameras';
 import getCameraList from '../../actions/getCameraList';
 import refreshIcon from '../../../public/Icons/refresh.svg';
 import power_on from '../../../public/Icons/power_on.svg';
@@ -12,13 +11,11 @@ import stopRecordIcon from '../../../public/Icons/StopRecording.svg';
 import startRecord from '../../actions/startRecord';
 import stopRecord from '../../actions/stopRecord';
 import getSnapshot from '../../actions/getSnapshot';
-import changeScreen from '../../actions/changeScreen';
 import launch from '../../actions/launchActions';
 import snapshoIcon from '../../../public/Icons/snapshot.svg';
 import videoPlayerIcon from '../../../public/Icons/Video player.svg';
 import imagePlayerIcon from '../../../public/Icons/Image viewer.svg';
 import css from './Footer.module.less';
-import {setSelectedResolution}  from '../../actions/settings';
 
 const cx = classNames.bind(css);
 
@@ -31,19 +28,25 @@ class Footer extends React.Component {
 		};
 	}
 	refresh = () => {
-		this.props.closeCameras(true);
+		this.props.turnOffCamera(true);
+	};
+	closeCameras = () => {
+		this.props.turnOffCamera();
+	};
+	openCameras = () => {
+		this.props.getCameraList();
 	};
 	powerONandOff = () => {
 		if (this.state.cameraPower) {
 			this.setState({
 				cameraPower: false
 			});
-			this.props.closeCameras(false);
+			this.closeCameras();
 		} else {
 			this.setState({
 				cameraPower: true
 			});
-			this.props.getCameraList();
+			this.openCameras();
 		}
 	};
 	record = () => {
@@ -138,13 +141,10 @@ const mapStateToProps = ({selectedCameras, cameraStatus, screen}) => {
 	};
 };
 const mapDispatchToProps = (dispatch) => ({
-	changeScreen: (data) => dispatch(changeScreen(data)),
-	closeCameras: (handle) => dispatch(closeCameras(handle)),
 	getCameraList: () => dispatch(getCameraList()),
 	startRecord: (mediaID, ui) => dispatch(startRecord(mediaID, ui)),
 	stopRecord: (mediaID, ui) => dispatch(stopRecord(mediaID, ui)),
 	getSnapshot: (mediaID) => dispatch(getSnapshot(mediaID)),
-	launch: (type) => dispatch(launch(type)),
-	setSelectedResolution:(ressolution) => dispatch(setSelectedResolution(ressolution)),
+	launch: (type) => dispatch(launch(type))
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Footer);

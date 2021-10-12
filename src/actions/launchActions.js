@@ -18,7 +18,6 @@ const getList = (type, dispatch) => {
 				resolve: resolve
 			},
 			(res) => {
-				console.log('res : ', res);
 				delete res.errorCode;
 				delete res.returnValue;
 				delete res.errorText;
