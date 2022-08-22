@@ -33,7 +33,7 @@ const getList = (type, dispatch) => {
 						}
 					});
 				} else {
-					dispatch(showPopup('Media file not exit.'));
+					dispatch(showPopup('Media file not exist.'));
 					setTimeout(() => dispatch(hidePopup()), 2000);
 				}
 			}
