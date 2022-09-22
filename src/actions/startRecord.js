@@ -32,7 +32,7 @@ const startRecord = (id, ui) => (dispatch, getState) => {
 					location: '/media/multimedia/video-',
 					format: 'MP4',
 					audio: true,
-					audioSrc: 'pcm_input'
+					audioSrc: 'record'
 				},
 				resolve: resolve
 			},
