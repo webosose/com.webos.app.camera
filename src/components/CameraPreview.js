@@ -16,6 +16,7 @@ import {updateMediaID} from '../actions/updateCameraStatus';
 import launch from '../actions/launchActions';
 import css from './CameraPreview.module.less';
 import VideoContainer from './VideoContainer/VideoContainer';
+import PTZControl from './PTZControl/PTZControl';
 
 const cx = classNames.bind(css);
 
@@ -83,6 +84,7 @@ class CameraPreview extends React.Component {
 		const {recording} = this.props.data;
 		const cameraOptions = escape(JSON.stringify(option));
 		const type = 'service/webos-camera;cameraOption=' + cameraOptions;
+		const ptzSupport = this.props.ptzSupport[this.props.data.id];
 		// console.log('Main Screen cameraOptions: ', JSON.stringify(option));
 		return (
 			<div className={cx('cont')} onClick={this.openOptions}>
@@ -107,6 +109,8 @@ class CameraPreview extends React.Component {
 						) : (
 							''
 						)}
+						{ptzSupport && <PTZControl mainscreen camera_id = {this.props.data.id}/>}
+
 					</div>
 				) : (
 					''
@@ -135,11 +139,12 @@ class CameraPreview extends React.Component {
 	};
 }
 
-const mapStateToProps = ({screen, settings}, ownProps) => {
+const mapStateToProps = ({screen, settings,ptzSupport}, ownProps) => {
 	const {name} = settings.find((v) => v.id === ownProps.data.id);
 	return {
 		screen,
-		name
+		name,
+		ptzSupport
 	};
 };
 const mapDispatchToProps = (dispatch) => ({

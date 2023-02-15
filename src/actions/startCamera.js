@@ -1,4 +1,5 @@
 import lunaAction from './lunaActions';
+import { getPTZState } from './ptzChange';
 import {addSettings} from './settings';
 import {addCameraStatus, updatPreviewResolution} from './updateCameraStatus';
 
@@ -89,6 +90,7 @@ const startCamera = (id, changeResolution) => (dispatch, getState) => {
 	return new Promise((resolve) => {
 		open(id)
 			.then((handle) => {
+				dispatch(getPTZState(id));
 				if (changeResolution) {
 					return {handle, res: false};
 				}

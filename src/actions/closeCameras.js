@@ -1,5 +1,6 @@
 import getCameraList from './getCameraList';
 import lunaAction from './lunaActions';
+import ptzChange from './ptzChange';
 export const unload = (mediaId) => {
 	return new Promise((resolve) => {
 		console.log('unload enter.' + mediaId);
@@ -39,9 +40,11 @@ const stopPreview = (handle) => {
 		);
 	});
 };
-export const closeCamera = (handle) => () => {
+export const closeCamera = (handle, camera_id) => (dispatch, getState) => {
 	return stopPreview(handle).then(() => {
-		return new Promise((resolve) => {
+		const ptzSupport = getState().ptzSupport[camera_id];
+		console.log('ptzSupport supported ' + ptzSupport);
+		const closeCameraExecuter = (resolve) => {
 			console.log(' closeCamera: enter ' + handle);
 			lunaAction(
 				{
@@ -57,14 +60,28 @@ export const closeCamera = (handle) => () => {
 					resolve();
 				}
 			);
-		});
+		}
+		if (ptzSupport) {
+			return ptzChange(camera_id, false).then(() => {
+				dispatch({
+					type: "PTZ_CHANGE",
+					payload: {
+						[camera_id]: false
+					}
+				});
+				return new Promise(closeCameraExecuter)
+			})
+		} else {
+			return new Promise(closeCameraExecuter)
+		}
+
 	});
 };
 const closeCameras = (refresh, closeApp) => async (dispatch, getState) => {
 	const cameraStatus = getState().cameraStatus;
 	console.log('closeCameras: ', cameraStatus);
 	for (const camera of cameraStatus) {
-		await dispatch(closeCamera(camera.handle, camera.media_id));
+		await dispatch(closeCamera(camera.handle, camera.id));
 	}
 	if (closeApp) {
 		if (typeof window !== 'undefined') {

@@ -1,10 +1,26 @@
 import lunaAction from './lunaActions';
-import {clearSettings} from './settings';
+import { clearSettings } from './settings';
 import startCamera from './startCamera';
 
 const updateCameraStatus = (list) => (dispatch) => {
-	list.forEach(({id}) => {
+	const faceDetectionDefault = {};
+	const faceDetectionSupport= {}
+	list.forEach(({ id }) => {
 		dispatch(startCamera(id));
+		faceDetectionDefault[id] = false;
+		faceDetectionSupport[id] = true;
+	});
+	dispatch({
+		type: "PTZ_CHANGE",
+		payload: {
+			...faceDetectionDefault
+		}
+	});
+	dispatch({
+		type: "PTZ_SUPPORT",
+		payload: {
+			...faceDetectionSupport
+		}
 	});
 };
 const getCameraList = () => (dispatch) => {

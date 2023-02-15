@@ -21,6 +21,7 @@ import StarRecording from '../../../public/Icons/StarRecording.svg';
 import settingsIcon from '../../../public/Icons/settings.svg';
 import Settings from '../../components/Settings/Settings';
 import VideoContainer from '../../components/VideoContainer/VideoContainer';
+import PTZControl from '../../components/PTZControl/PTZControl';
 
 const cx = classNames.bind(css);
 
@@ -84,9 +85,9 @@ class FullScreenPreview extends React.Component {
 				showSettings: false
 			},
 			() => {
-				const {handle, media_id, id} = this.props.details;
+				const {handle, id} = this.props.details;
 				setTimeout(() => {
-					this.props.closeCamera(handle, media_id).then(() => {
+					this.props.closeCamera(handle, id).then(() => {
 						this.props.startCamera(id).then(() => {
 							this.closeSettings();
 						});
@@ -115,6 +116,7 @@ class FullScreenPreview extends React.Component {
 		const {recording, showSettings, loading} = this.state;
 		const cameraOptions = escape(JSON.stringify(option));
 		const type = 'service/webos-camera;cameraOption=' + cameraOptions;
+		const ptzSupport = this.props.ptzSupport[this.props.data.id];
 		// console.log('Full Screen cameraOptions:  ', JSON.stringify(option));
 		return (
 			<div className={cx('cont')}>
@@ -170,7 +172,7 @@ class FullScreenPreview extends React.Component {
 							className={cx('icon')}
 							onClick={this.openSettings}
 						/>
-
+						{ptzSupport && <PTZControl camera_id = {this.props.data.id}/> }
 						{showSettings ? (
 							<Settings
 								id={this.props.data.id}
@@ -202,10 +204,11 @@ class FullScreenPreview extends React.Component {
 		);
 	}
 }
-const mapStateToProps = ({cameraStatus}, ownProps) => {
+const mapStateToProps = ({cameraStatus,ptzSupport}, ownProps) => {
 	const details = cameraStatus.find((v) => v.id === ownProps.data.id);
 	return {
-		details
+		details,
+		ptzSupport
 	};
 };
 const mapDispatchToProps = (dispatch) => ({
@@ -216,6 +219,6 @@ const mapDispatchToProps = (dispatch) => ({
 	getSnapshot: (mediaID) => dispatch(getSnapshot(mediaID)),
 	launch: (type) => dispatch(launch(type)),
 	startCamera: (id) => dispatch(startCamera(id, true)),
-	closeCamera: (handle, media_id) => dispatch(closeCamera(handle, media_id))
+	closeCamera: (handle, cameraID) => dispatch(closeCamera(handle, cameraID))
 });
 export default connect(mapStateToProps, mapDispatchToProps)(FullScreenPreview);
