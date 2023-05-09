@@ -87,6 +87,10 @@ const startPreview = (handle) => {
 	});
 };
 const startCamera = (id, changeResolution) => (dispatch, getState) => {
+	dispatch({
+		type:'CHANGE_FOOTER_STATE',
+		payload:'inprogress'
+	});
 	return new Promise((resolve) => {
 		open(id)
 			.then((handle) => {
@@ -113,7 +117,6 @@ const startCamera = (id, changeResolution) => (dispatch, getState) => {
 					height,
 					fps: frameRate
 				} = getState().settings.find((v) => v.id === id).selRes;
-
 				if (changeResolution) {
 					dispatch(
 						updatPreviewResolution({
@@ -142,6 +145,14 @@ const startCamera = (id, changeResolution) => (dispatch, getState) => {
 							handle: res.handle
 						})
 					);
+				}
+				if(getState().cameralist.length === getState().cameraStatus.length){
+					setTimeout(()=>{
+						dispatch({
+							type:'CHANGE_FOOTER_STATE',
+							payload:''
+						});
+					},1000);
 				}
 				resolve();
 			});

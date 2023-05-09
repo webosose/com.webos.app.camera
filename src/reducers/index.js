@@ -6,6 +6,7 @@ import selectedCameras from './selectedCameras';
 import popup from './popup';
 import settings from './settings';
 import ptzStatus, { ptzSupport } from './ptzStatus';
+import footerAction from './footerAction';
 const rootReducer = combineReducers({
 	cameralist,
 	cameraStatus,
@@ -14,7 +15,8 @@ const rootReducer = combineReducers({
 	popup,
 	settings,
 	ptzStatus,
-	ptzSupport
+	ptzSupport,
+	footerAction
 });
 
 export default rootReducer;

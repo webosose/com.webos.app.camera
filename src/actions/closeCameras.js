@@ -90,6 +90,13 @@ const closeCameras = (refresh, closeApp) => async (dispatch, getState) => {
 	}
 	if (refresh) {
 		dispatch(getCameraList());
+	}else{
+		setTimeout(()=>{
+			dispatch({
+				type:'CHANGE_FOOTER_STATE',
+				payload:''
+			});
+		},1000);
 	}
 };
 

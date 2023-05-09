@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import classNames from 'classnames/bind';
 import Icon from '@enact/sandstone/Icon';
+import Spinner from '@enact/sandstone/Spinner';
 import closeCameras from '../../actions/closeCameras';
 import CameraList from '../CameraList/CameraList';
 import CamerasGrid from '../CamerasGrid/CamerasGrid';
@@ -33,6 +34,7 @@ class MainScreen extends React.Component {
 	render() {
 		return (
 			<div>
+				{this.props.footerAction === 'inprogress' ? <Spinner className={cx('spinner')}>Loading Preview...</Spinner> : "" }
 				<Icon className={cx('closeIcon')} onClick={this.handleClose}>
 					closex
 				</Icon>
@@ -49,9 +51,10 @@ class MainScreen extends React.Component {
 		);
 	}
 }
-const mapStateToProps = ({cameraStatus}) => {
+const mapStateToProps = ({cameraStatus,footerAction}) => {
 	return {
-		cameraStatus
+		cameraStatus,
+		footerAction
 	};
 };
 const mapDispatchToProps = (dispatch) => ({

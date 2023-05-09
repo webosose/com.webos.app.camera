@@ -24,29 +24,51 @@ class Footer extends React.Component {
 		super(props);
 		this.state = {
 			recording: false,
-			cameraPower: true
+			cameraPower: true,
+			inprogressdisable : false
 		};
 	}
 	refresh = () => {
-		this.props.turnOffCamera(true);
+		if(!this.state.inprogressdisable){
+			console.log("refresh   refresh")
+			this.props.turnOffCamera(true);
+			this.props.changeFooterState();
+		}
 	};
 	closeCameras = () => {
-		this.props.turnOffCamera();
+		if(!this.state.inprogressdisable){
+			this.props.turnOffCamera();
+			this.props.changeFooterState("stopcamera");
+		}
 	};
 	openCameras = () => {
-		this.props.getCameraList();
+		if(!this.state.inprogressdisable){
+			this.props.getCameraList();
+			this.props.changeFooterState();
+		}
 	};
+	componentWillReceiveProps(nextProps) {
+        console.log('componentWillReceiveProps', nextProps.footerAction);
+        this.setState({
+			inprogressdisable: nextProps.footerAction === 'inprogress' || nextProps.footerAction === 'stopcamera'
+		});
+    }
 	powerONandOff = () => {
-		if (this.state.cameraPower) {
+		if(!this.state.inprogressdisable){
 			this.setState({
-				cameraPower: false
+				inprogressdisable:true
 			});
-			this.closeCameras();
-		} else {
-			this.setState({
-				cameraPower: true
-			});
-			this.openCameras();
+			if (this.state.cameraPower) {
+				this.setState({
+					cameraPower: false
+				});
+				this.closeCameras();
+			} else {
+				this.setState({
+					cameraPower: true
+				});
+				this.openCameras();
+			}
 		}
 	};
 	record = () => {
@@ -91,18 +113,21 @@ class Footer extends React.Component {
 			this.props.selectedCameras.length === 0 ||
 			this.props.screen.data.disablFooterRecording ||
 			false;
+		const footerAction = this.props.footerAction;
 		const {recording, cameraPower} = this.state;
 		console.log('cameraPower:  ' + cameraPower);
 		return (
 			<div>
 				<div className={cx('row')}>
 					<Image
+						disabled = {this.state.inprogressdisable}
 						src={refreshIcon}
 						onClick={this.refresh}
 						className={cx('icon')}
 					/>
 					<Image
-						src={cameraPower ? power_off : power_on}
+						disabled = {this.state.inprogressdisable}
+					    src={cameraPower ? power_off : power_on}
 						onClick={this.powerONandOff}
 						className={cx('icon')}
 					/>
@@ -133,11 +158,12 @@ class Footer extends React.Component {
 		);
 	}
 }
-const mapStateToProps = ({selectedCameras, cameraStatus, screen}) => {
+const mapStateToProps = ({selectedCameras, cameraStatus, screen,footerAction}) => {
 	return {
 		selectedCameras,
 		cameraStatus,
-		screen
+		screen,
+		footerAction
 	};
 };
 const mapDispatchToProps = (dispatch) => ({
@@ -145,6 +171,10 @@ const mapDispatchToProps = (dispatch) => ({
 	startRecord: (mediaID, ui) => dispatch(startRecord(mediaID, ui)),
 	stopRecord: (mediaID, ui) => dispatch(stopRecord(mediaID, ui)),
 	getSnapshot: (mediaID) => dispatch(getSnapshot(mediaID)),
-	launch: (type) => dispatch(launch(type))
+	launch: (type) => dispatch(launch(type)),
+	changeFooterState:(stopcamera) => dispatch({
+		type:'CHANGE_FOOTER_STATE',
+		payload:stopcamera || 'inprogress'
+	}),
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Footer);
