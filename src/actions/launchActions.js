@@ -1,6 +1,5 @@
 import lunaAction from './lunaActions';
-import {showPopup, hidePopup} from './changeScreen';
-const getList = (type, dispatch) => {
+const getList = (type) => {
 	let name = 'getVideoList';
 	let id = 'com.webos.app.videoplayer';
 	if (type === 'imageList') {
@@ -22,20 +21,18 @@ const getList = (type, dispatch) => {
 				delete res.returnValue;
 				delete res.errorText;
 				const list = res[type]['results'];
+				const returnValue = {
+					id
+				};
 				if (list.length > 0) {
-					resolve({
-						id,
-						params: {
-							[type]: {
-								results: [list[list.length - 1]],
-								count: 1
-							}
+					returnValue.params = {
+						[type]: {
+							results: [list[list.length - 1]],
+							count: 1
 						}
-					});
-				} else {
-					dispatch(showPopup('Media file not exist.'));
-					setTimeout(() => dispatch(hidePopup()), 2000);
+					};
 				}
+				resolve(returnValue);
 			}
 		);
 	});

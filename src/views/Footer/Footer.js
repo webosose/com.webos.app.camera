@@ -113,7 +113,6 @@ class Footer extends React.Component {
 			this.props.selectedCameras.length === 0 ||
 			this.props.screen.data.disablFooterRecording ||
 			false;
-		const footerAction = this.props.footerAction;
 		const {recording, cameraPower} = this.state;
 		console.log('cameraPower:  ' + cameraPower);
 		return (
