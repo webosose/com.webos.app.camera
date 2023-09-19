@@ -47,7 +47,7 @@ class Footer extends React.Component {
 			this.props.changeFooterState();
 		}
 	};
-	componentWillReceiveProps(nextProps) {
+	UNSAFE_componentWillReceiveProps(nextProps) {
         console.log('componentWillReceiveProps', nextProps.footerAction);
         this.setState({
 			inprogressdisable: nextProps.footerAction === 'inprogress' || nextProps.footerAction === 'stopcamera'

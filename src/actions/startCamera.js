@@ -1,7 +1,11 @@
 import lunaAction from './lunaActions';
 import { getPTZState } from './ptzChange';
-import {addSettings} from './settings';
-import {addCameraStatus, updatPreviewResolution} from './updateCameraStatus';
+import { addSettings } from './settings';
+import { addCameraStatus, updatPreviewResolution } from './updateCameraStatus';
+const MEDIA_TYPES = {
+	JPEG: 'JPEG',
+	YUV: 'YUV'
+};
 
 const open = (id) => {
 	return new Promise((resolve) => {
@@ -19,43 +23,50 @@ const open = (id) => {
 		);
 	});
 };
-const getProperties = (handle) => {
-	return new Promise((resolve) => {
+const getCameraInfoById = (id) => {
+	return new Promise((resolve, reject) => {
 		lunaAction(
 			{
 				service: 'luna://com.webos.service.camera2',
-				method: 'getProperties',
+				method: 'getInfo',
 				parameters: {
-					handle
+					id
 				},
 				resolve: resolve
 			},
 			(res) => {
-				if (res.returnValue) {
-					resolve({handle, res});
+				if (res?.returnValue) {
+					resolve(res?.info);
+				} else {
+					console.log('getInfo by Id: ' + id + ' has error: ' + JSON.stringify(res));
+					reject({
+						method: 'getInfo',
+						response: res
+					});
 				}
 			}
 		);
 	});
-};
+}
 const setFormat = (handle, selRes) => {
 	return new Promise((resolve) => {
+		const params = {
+			format: MEDIA_TYPES.JPEG,
+			...selRes
+		};
 		lunaAction(
 			{
 				service: 'luna://com.webos.service.camera2',
 				method: 'setFormat',
 				parameters: {
 					handle,
-					params: {
-						format: 'JPEG',
-						...selRes
-					}
+					params
 				},
 				resolve: resolve
 			},
 			(res) => {
 				console.log(
-					handle+'  setFormat: ' + JSON.stringify(selRes) + '' + JSON.stringify(res)
+					handle + ' setFormat: ' + JSON.stringify(params) + '' + JSON.stringify(res)
 				);
 				resolve(handle);
 			}
@@ -92,18 +103,17 @@ const startCamera = (id, changeResolution) => (dispatch, getState) => {
 		payload:'inprogress'
 	});
 	return new Promise((resolve) => {
-		open(id)
-			.then((handle) => {
+		Promise.all([getCameraInfoById(id), open(id)])
+			.then((response) => {
+				const cameraInfo = response[0];
+				const handle = response[1];
+				const cameraResolution = cameraInfo?.resolution || {};
+
 				dispatch(getPTZState(id));
-				if (changeResolution) {
-					return {handle, res: false};
+				if (!changeResolution) {
+					dispatch(addSettings(id, cameraResolution[MEDIA_TYPES.JPEG] || []));
 				}
-				return getProperties(handle);
-			})
-			.then(({handle, res}) => {
-				if (res instanceof Object) {
-					dispatch(addSettings(id, res.params.resolution['JPEG']));
-				}
+
 				const {selRes} = getState().settings.find((v) => v.id === id);
 				return setFormat(handle, selRes);
 			})
@@ -124,8 +134,8 @@ const startCamera = (id, changeResolution) => (dispatch, getState) => {
 							width,
 							height,
 							frameRate,
-							format: 'JPEG',
-							streamType: 'JPEG',
+							format: MEDIA_TYPES.JPEG,
+							streamType: MEDIA_TYPES.JPEG,
 							memType: 'shmem',
 							memSrc: res.memsrc,
 							handle: res.handle
@@ -138,8 +148,8 @@ const startCamera = (id, changeResolution) => (dispatch, getState) => {
 							width,
 							height,
 							frameRate,
-							format: 'JPEG',
-							streamType: 'JPEG',
+							format: MEDIA_TYPES.JPEG,
+							streamType: MEDIA_TYPES.JPEG,
 							memType: 'shmem',
 							memSrc: res.memsrc,
 							handle: res.handle
@@ -155,6 +165,9 @@ const startCamera = (id, changeResolution) => (dispatch, getState) => {
 					},1000);
 				}
 				resolve();
+			})
+			.catch((err) => {
+				console.log('Start camera error: ', JSON.stringify(err));
 			});
 	});
 };
