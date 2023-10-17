@@ -21,27 +21,27 @@ export const unload = (mediaId) => {
 	});
 };
 
-const stopPreview = (handle) => {
+const stopCamera = (handle) => {
 	return new Promise((resolve) => {
-		console.log(' stopPreview: enter ' + handle);
+		console.log(' stopCamera: enter ' + handle);
 		lunaAction(
 			{
 				service: 'luna://com.webos.service.camera2',
-				method: 'stopPreview',
+				method: 'stopCamera',
 				parameters: {
 					handle
 				},
 				resolve: resolve
 			},
 			(res) => {
-				console.log(handle + ' stopPreview: ' + JSON.stringify(res));
+				console.log(handle + ' stopCamera: ' + JSON.stringify(res));
 				resolve();
 			}
 		);
 	});
 };
 export const closeCamera = (handle, camera_id) => (dispatch, getState) => {
-	return stopPreview(handle).then(() => {
+	return stopCamera(handle).then(() => {
 		const ptzSupport = getState().ptzSupport[camera_id];
 		console.log('ptzSupport supported ' + ptzSupport);
 		const closeCameraExecuter = (resolve) => {
