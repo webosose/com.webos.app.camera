@@ -15,12 +15,12 @@ export const getPTZState = (camera_id) => (dispatch) => {
             (res) => {
                 console.log("getPTZState res :: ", res);
                 if (res.returnValue) {
-                    const FaceDetectionAIF = res.solutions.find((value) => value.name === "FaceDetectionAIF")
-                    if (FaceDetectionAIF) {
+                    const FaceDetection = res.solutions.find((value) => value.name === "FaceDetection")
+                    if (FaceDetection) {
                         dispatch({
                             type: "PTZ_CHANGE",
                             payload: {
-                                [camera_id]: FaceDetectionAIF.params.enable
+                                [camera_id]: FaceDetection.params.enable
                             }
                         });
                     }else {
@@ -46,7 +46,7 @@ const ptzChange = (camera_id, value) => {
                 parameters: {
                     id: camera_id,
                     solutions: [{
-                        name: "FaceDetectionAIF",
+                        name: "FaceDetection",
                         params: { enable: value }
                     }]
                 },
