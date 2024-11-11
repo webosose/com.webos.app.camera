@@ -78,7 +78,7 @@ const startPreview = (handle) => {
 		lunaAction(
 			{
 				service: 'luna://com.webos.service.camera2',
-				method: 'startPreview',
+				method: 'startCamera',
 				parameters: {
 					handle,
 					params: {
